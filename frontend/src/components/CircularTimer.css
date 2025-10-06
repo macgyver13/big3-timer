@@ -1,0 +1,102 @@
+.circular-timer {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: scale(1);
+}
+
+.timer-circle-bg {
+  stroke: rgba(255, 255, 255, 0.1);
+  transition: stroke 0.3s ease;
+}
+
+.timer-circle-progress {
+  transition: stroke-dashoffset 0.1s linear, stroke 0.3s ease;
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+.timer-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.timer-number {
+  font-size: 5rem;
+  font-weight: 900;
+  color: var(--color-text);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer-label {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 0.5rem;
+}
+
+/* Pulse animation when time is running low */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.timer-svg.pulse {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+/* Responsive sizing */
+@media (max-width: 768px) {
+  .circular-timer {
+    width: 240px;
+    height: 240px;
+  }
+
+  .timer-svg {
+    width: 240px;
+    height: 240px;
+  }
+
+  .timer-number {
+    font-size: 4rem;
+  }
+
+  .timer-label {
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .circular-timer {
+    width: 200px;
+    height: 200px;
+  }
+
+  .timer-svg {
+    width: 200px;
+    height: 200px;
+  }
+
+  .timer-number {
+    font-size: 3.5rem;
+  }
+}
