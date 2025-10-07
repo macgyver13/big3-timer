@@ -20,6 +20,7 @@ const DEFAULT_CONFIG = {
   pyramid: [12, 8, 4], // Reps per set
   holdDuration: 10, // seconds
   pauseDuration: 3, // seconds between holds
+  countdownDuration: 3, // seconds before starting hold
   audioPreference: 'beep', // beep, chime, tone
   volume: 0.7,
   theme: 'dark'
@@ -57,7 +58,7 @@ export const WorkoutProvider = ({ children }) => {
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0)
   const [currentSetIndex, setCurrentSetIndex] = useState(0) // 0 = 12 reps, 1 = 8 reps, 2 = 4 reps
   const [currentRepIndex, setCurrentRepIndex] = useState(0) // Current rep within the set
-  const [phase, setPhase] = useState('idle') // idle, hold, pause, rest, complete
+  const [phase, setPhase] = useState('idle') // idle, countdown, hold, pause, rest, complete
   const [timeRemaining, setTimeRemaining] = useState(0) // seconds
 
   // Fetch exercise details from API on mount
@@ -93,8 +94,8 @@ export const WorkoutProvider = ({ children }) => {
     setCurrentExerciseIndex(startingExerciseIndex)
     setCurrentSetIndex(0)
     setCurrentRepIndex(0)
-    setPhase('hold')
-    setTimeRemaining(config.holdDuration)
+    setPhase('countdown')
+    setTimeRemaining(config.countdownDuration)
   }
 
   const startFromPosition = (setIndex, exerciseIndex) => {
@@ -103,8 +104,8 @@ export const WorkoutProvider = ({ children }) => {
     setCurrentSetIndex(setIndex)
     setCurrentExerciseIndex(exerciseIndex)
     setCurrentRepIndex(0)
-    setPhase('hold')
-    setTimeRemaining(config.holdDuration)
+    setPhase('countdown')
+    setTimeRemaining(config.countdownDuration)
   }
 
   const pauseWorkout = () => {
@@ -125,7 +126,11 @@ export const WorkoutProvider = ({ children }) => {
   const nextPhase = () => {
     const currentSet = config.pyramid[currentSetIndex]
 
-    if (phase === 'hold') {
+    if (phase === 'countdown') {
+      // Countdown complete - start hold
+      setPhase('hold')
+      setTimeRemaining(config.holdDuration)
+    } else if (phase === 'hold') {
       // Just completed a hold
       const nextRep = currentRepIndex + 1
 
@@ -163,13 +168,13 @@ export const WorkoutProvider = ({ children }) => {
         }
       }
     } else if (phase === 'pause') {
-      // Pause complete - start next hold
+      // Pause complete - go directly to next hold (no countdown between reps)
       setPhase('hold')
       setTimeRemaining(config.holdDuration)
     } else if (phase === 'rest') {
-      // Manual rest complete - user clicks to continue
-      setPhase('hold')
-      setTimeRemaining(config.holdDuration)
+      // Manual rest complete - user clicks to continue - start countdown for first rep
+      setPhase('countdown')
+      setTimeRemaining(config.countdownDuration)
     }
   }
 

@@ -12,6 +12,7 @@ const WorkoutTimerContent = () => {
   const [showSettings, setShowSettings] = useState(false)
   const [showVideos, setShowVideos] = useState(false)
   const [selectedVideoExercise, setSelectedVideoExercise] = useState(null)
+  const currentExerciseRef = React.useRef(null)
   const {
     config,
     isActive,
@@ -44,6 +45,16 @@ const WorkoutTimerContent = () => {
   // Keep screen awake during workout
   useWakeLock(isActive)
 
+  // Auto-scroll to current exercise in progress list
+  useEffect(() => {
+    if (currentExerciseRef.current && phase === 'rest') {
+      currentExerciseRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      })
+    }
+  }, [currentExerciseIndex, currentSetIndex, phase])
+
   // Timer countdown logic
   const { formattedTime } = useTimer(
     timeRemaining,
@@ -65,6 +76,7 @@ const WorkoutTimerContent = () => {
         // Play quick double beep at end of pause before next hold
         playPauseComplete()
       }
+      // No sound for countdown completion
       nextPhase()
     }
   )
@@ -138,6 +150,8 @@ const WorkoutTimerContent = () => {
     switch (phase) {
       case 'idle':
         return 'Ready to start'
+      case 'countdown':
+        return 'Get Ready!'
       case 'hold':
         return 'HOLD'
       case 'pause':
@@ -171,7 +185,7 @@ const WorkoutTimerContent = () => {
   }
 
   const getCurrentRepDisplay = () => {
-    if (phase === 'idle' || phase === 'complete' || phase === 'rest') return ''
+    if (phase === 'idle' || phase === 'complete' || phase === 'rest' || phase === 'countdown') return ''
     return `Rep ${currentRepIndex + 1} of ${currentSetReps}`
   }
 
@@ -267,10 +281,16 @@ const WorkoutTimerContent = () => {
         )}
 
         {/* Timer */}
-        {(phase === 'hold' || phase === 'pause') && (
+        {(phase === 'countdown' || phase === 'hold' || phase === 'pause') && (
           <CircularTimer
             timeRemaining={timeRemaining}
-            totalTime={phase === 'hold' ? config.holdDuration : config.pauseDuration}
+            totalTime={
+              phase === 'countdown'
+                ? config.countdownDuration
+                : phase === 'hold'
+                  ? config.holdDuration
+                  : config.pauseDuration
+            }
             phase={phase}
           />
         )}
@@ -294,6 +314,7 @@ const WorkoutTimerContent = () => {
                 return (
                   <button
                     key={item.key}
+                    ref={item.isCurrent ? currentExerciseRef : null}
                     className={`progress-item clickable ${item.isCompleted ? 'completed' : ''} ${item.isCurrent ? 'current' : ''}`}
                     onClick={() => startFromPosition(setIdx, exIdx)}
                   >

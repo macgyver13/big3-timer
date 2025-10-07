@@ -30,12 +30,6 @@ const Settings = ({ isOpen, onClose }) => {
     setLocalConfig(prev => ({ ...prev, ...updates }))
   }
 
-  const updateExercise = (index, field, value) => {
-    const newExercises = [...localConfig.exercises]
-    newExercises[index] = { ...newExercises[index], [field]: value }
-    updateLocalConfig({ exercises: newExercises })
-  }
-
   const moveExercise = (index, direction) => {
     const newExercises = [...localConfig.exercises]
     const targetIndex = direction === 'up' ? index - 1 : index + 1
@@ -56,13 +50,13 @@ const Settings = ({ isOpen, onClose }) => {
       updateLocalConfig({
         pyramid: [8, 4, 2],
         holdDuration: 7,
-        pauseDuration: 3
+        pauseDuration: 4
       })
     } else if (preset === 'advanced') {
       updateLocalConfig({
         pyramid: [12, 8, 4],
         holdDuration: 10,
-        pauseDuration: 2
+        pauseDuration: 3
       })
     }
   }
@@ -86,7 +80,7 @@ const Settings = ({ isOpen, onClose }) => {
               </button>
               <button className="preset-btn advanced" onClick={() => applyPreset('advanced')}>
                 <div className="preset-name">Advanced</div>
-                <div className="preset-details">12, 8, 4 reps • 10s holds • 2s pause</div>
+                <div className="preset-details">12, 8, 4 reps • 10s holds • 3s pause</div>
               </button>
             </div>
           </section>
@@ -112,6 +106,16 @@ const Settings = ({ isOpen, onClose }) => {
                 max="30"
                 value={localConfig.pauseDuration}
                 onChange={(e) => updateLocalConfig({ pauseDuration: parseInt(e.target.value) || 3 })}
+              />
+            </div>
+            <div className="setting-item">
+              <label>Get Ready (seconds)</label>
+              <input
+                type="number"
+                min="0"
+                max="10"
+                value={localConfig.countdownDuration}
+                onChange={(e) => updateLocalConfig({ countdownDuration: parseInt(e.target.value) || 3 })}
               />
             </div>
           </section>
