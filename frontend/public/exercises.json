@@ -7,13 +7,13 @@
       "videos": [
         {
           "title": "Stuart McGill - Curl Up Demo",
-          "url": "https://www.youtube.com/watch?v=Vdl_WF90dGg",
-          "duration": "2:15"
+          "url": "https://www.youtube.com/watch?v=vLpHJ1Cxj6k",
+          "duration": "1:22"
         },
         {
-          "title": "Detailed Curl Up Tutorial",
-          "url": "https://www.youtube.com/watch?v=OyOCJ3mByZ0",
-          "duration": "5:30"
+          "title": "Stuart McGill - Curl Up Tutorial",
+          "url": "https://www.youtube.com/watch?v=2_e4I-brfqs&t=62s",
+          "duration": "2:30"
         }
       ]
     },
@@ -24,13 +24,13 @@
       "videos": [
         {
           "title": "Stuart McGill - Side Plank Demo",
-          "url": "https://www.youtube.com/watch?v=K6RDfZL2oCM",
-          "duration": "3:20"
+          "url": "https://www.youtube.com/watch?v=VAPN4CmUWqk",
+          "duration": "1:03"
         },
         {
-          "title": "Side Plank Progressions",
-          "url": "https://www.youtube.com/watch?v=wqzrb67Dwf8",
-          "duration": "4:45"
+          "title": "Stuart McGill - Side Plank Tutorial",
+          "url": "https://www.youtube.com/watch?v=2_e4I-brfqs&t=210s",
+          "duration": "1:30"
         }
       ]
     },
@@ -41,13 +41,13 @@
       "videos": [
         {
           "title": "Stuart McGill - Bird Dog Demo",
-          "url": "https://www.youtube.com/watch?v=wiFNA3sqjCA",
-          "duration": "2:45"
+          "url": "https://www.youtube.com/watch?v=S1QbyYZaXIg",
+          "duration": "1:35"
         },
         {
-          "title": "Bird Dog Common Mistakes",
-          "url": "https://www.youtube.com/watch?v=7eOZlDCTBj8",
-          "duration": "6:10"
+          "title": "Stuart McGill - Bird Dog Tutorial",
+          "url": "https://www.youtube.com/watch?v=2_e4I-brfqs&t=295s",
+          "duration": "4:05"
         }
       ]
     }
