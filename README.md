@@ -22,31 +22,29 @@ A Progressive Web App (PWA) for Stuart McGill's Big 3 exercises: Curl Up, Side P
 Requirements:
 - Node.js 18+ (or use Nix flake)
 - npm
+- Vercel CLI (optional, for local serverless testing)
 
 ```bash
 # Using Just
 just dev
 
 # Or manually
-cd frontend && npm install && npm run dev &
-cd backend && npm install && npm start
+cd frontend && npm install && npm run dev
 ```
 
 Frontend will run on http://localhost:5173
-Backend will run on http://localhost:3000
 
-### Production Build
+### Local Testing with Vercel
 
 ```bash
-# Build and serve
-just serve
+# Install Vercel CLI
+npm i -g vercel
 
-# Or manually
-cd frontend && npm run build
-cd backend && npm start
+# Run serverless functions locally
+vercel dev
 ```
 
-The backend serves the built frontend from `frontend/dist/` on http://localhost:3000
+This simulates the production serverless environment locally.
 
 ## Development with Nix
 
@@ -72,13 +70,14 @@ big3-timer/
 │   │   ├── hooks/      # Custom React hooks
 │   │   └── main.jsx
 │   ├── public/
+│   │   └── exercises.json  # Exercise configuration
 │   └── vite.config.js
-├── backend/            # Fastify server
-│   ├── config/         # Exercise configuration
-│   │   └── exercises.json
-│   └── server.js
+├── api/                # Vercel serverless functions
+│   ├── health.js       # Health check endpoint
+│   └── exercises.js    # Exercise data endpoint
 ├── planning/           # Development todos
 ├── Justfile            # Task runner commands
+├── vercel.json         # Vercel deployment config
 └── flake.nix          # Nix development environment
 ```
 
@@ -86,7 +85,7 @@ big3-timer/
 
 ### Exercise Videos
 
-Edit `backend/config/exercises.json` to customize exercise videos:
+Edit `frontend/public/exercises.json` to customize exercise videos:
 
 ```json
 {
@@ -119,27 +118,31 @@ All user preferences are stored in browser localStorage:
 
 ## Deployment
 
-### Using Docker (Recommended)
+### Vercel (Recommended)
+
+This app is designed for Vercel's serverless platform:
 
 ```bash
-# Build image
-docker build -t big3-timer .
+# Install Vercel CLI
+npm i -g vercel
 
-# Run container
-docker run -p 3000:3000 big3-timer
+# Deploy
+vercel
+
+# Deploy to production
+vercel --prod
 ```
 
-### Manual Deployment
+The app automatically deploys:
+- Frontend from `frontend/dist`
+- Serverless API functions from `/api`
 
-1. Build the frontend: `cd frontend && npm run build`
-2. Deploy `backend/` directory with `frontend/dist/` to your server
-3. Set `NODE_ENV=production`
-4. Run `node server.js` or use a process manager like PM2
+### Configuration
 
-### Environment Variables
-
-- `PORT`: Server port (default: 3000)
-- `NODE_ENV`: Set to `production` for production deployment
+Vercel configuration is in [vercel.json](vercel.json):
+- Builds frontend with Vite
+- Serves static files from `frontend/dist`
+- Routes `/api/*` requests to serverless functions
 
 ## Browser Support
 

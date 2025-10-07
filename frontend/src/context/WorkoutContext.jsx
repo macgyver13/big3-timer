@@ -64,7 +64,11 @@ export const WorkoutProvider = ({ children }) => {
   useEffect(() => {
     const fetchExercises = async () => {
       try {
-        const response = await fetch('/api/exercises')
+        // In development, fetch from public folder
+        // In production (Vercel), fetch from API
+        const isDev = import.meta.env.DEV
+        const url = isDev ? '/exercises.json' : '/api/exercises'
+        const response = await fetch(url)
         const data = await response.json()
         setExerciseDetails(data.exercises || [])
       } catch (error) {
