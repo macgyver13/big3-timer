@@ -27,17 +27,15 @@ const WorkoutTimerContent = () => {
     currentSetIndex,
     currentRepIndex,
     currentSetReps,
-    totalSets,
     startWorkout,
     startFromPosition,
     pauseWorkout,
     resumeWorkout,
     stopWorkout,
-    nextPhase,
-    skipToNext
+    nextPhase
   } = useWorkout()
 
-  const { playHoldComplete, playSetComplete, playPauseComplete } = useAudio(
+  const { startWorkoutAudio, playHoldComplete, playSetComplete, playPauseComplete } = useAudio(
     config.audioPreference,
     config.volume
   )
@@ -62,79 +60,24 @@ const WorkoutTimerContent = () => {
     isActive && phase !== 'rest',
     isPaused,
     () => {
-      // Timer completed
-      if (phase === 'hold') {
-        // Check if this is the last rep of the set
-        const currentSet = config.pyramid[currentSetIndex]
-        const isLastRepOfSet = currentRepIndex + 1 >= currentSet
-
-        if (!isLastRepOfSet) {
-          // Only play hold complete if not the last rep
-          playHoldComplete()
-        }
-      } else if (phase === 'pause') {
-        // Play quick double beep at end of pause before next hold
-        playPauseComplete()
-      }
-      // No sound for countdown completion
+      // Timer completed - just move to next phase
       nextPhase()
     }
   )
 
-  // Play set complete sound when entering rest phase
+  // Announce and play sounds when phase changes
   useEffect(() => {
-    if (phase === 'rest') {
-      console.log('SET COMPLETE - Playing 3-tone sound')
+    if (phase === 'hold') {
+    //   console.log('HOLD phase - announcing HOLD')
+      playHoldComplete()
+    } else if (phase === 'pause') {
+    //   console.log('PAUSE phase - announcing REST')
+      playPauseComplete()
+    } else if (phase === 'rest') {
+    //   console.log('REST phase - announcing COMPLETE')
       playSetComplete()
     }
-  }, [phase, playSetComplete])
-
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyPress = (e) => {
-      // Ignore if typing in settings or modal
-      if (showSettings || showVideos) return
-
-      switch (e.key.toLowerCase()) {
-        case ' ': // Space - pause/resume
-        case 'p':
-          e.preventDefault()
-          if (isActive && phase !== 'rest' && phase !== 'complete') {
-            if (isPaused) {
-              resumeWorkout()
-            } else {
-              pauseWorkout()
-            }
-          }
-          break
-        case 'enter': // Enter - start/continue
-          e.preventDefault()
-          if (!isActive) {
-            startWorkout()
-          } else if (phase === 'rest') {
-            nextPhase()
-          }
-          break
-        case 's': // S - skip
-          e.preventDefault()
-          if (isActive && phase !== 'complete' && phase !== 'rest') {
-            skipToNext()
-          }
-          break
-        case 'escape': // Escape - stop
-          e.preventDefault()
-          if (isActive) {
-            stopWorkout()
-          }
-          break
-        default:
-          break
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyPress)
-    return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [isActive, isPaused, phase, showSettings, showVideos, startWorkout, pauseWorkout, resumeWorkout, stopWorkout, nextPhase, skipToNext])
+  }, [phase, playHoldComplete, playPauseComplete, playSetComplete])
 
   const handleStartResume = () => {
     if (!isActive) {
@@ -153,7 +96,7 @@ const WorkoutTimerContent = () => {
       case 'countdown':
         return 'Get Ready!'
       case 'hold':
-        return 'HOLD'
+        return 'Hold'
       case 'pause':
         return 'Rest'
       case 'rest':
@@ -316,7 +259,9 @@ const WorkoutTimerContent = () => {
                     key={item.key}
                     ref={item.isCurrent ? currentExerciseRef : null}
                     className={`progress-item clickable ${item.isCompleted ? 'completed' : ''} ${item.isCurrent ? 'current' : ''}`}
-                    onClick={() => startFromPosition(setIdx, exIdx)}
+                    onClick={() => {
+                      startFromPosition(setIdx, exIdx)
+                    }}
                   >
                     <span className="progress-icon">
                       {item.isCompleted ? '✓' : item.isCurrent ? '▶' : '○'}
@@ -344,7 +289,10 @@ const WorkoutTimerContent = () => {
                   <button
                     key={item.key}
                     className="progress-item clickable"
-                    onClick={() => startFromPosition(setIdx, exIdx)}
+                    onClick={() => {
+                      startWorkoutAudio()
+                      startFromPosition(setIdx, exIdx)
+                    }}
                   >
                     <span className="progress-icon">○</span>
                     <span className="progress-label">{item.label}</span>
@@ -354,7 +302,10 @@ const WorkoutTimerContent = () => {
             </div>
           </div>
 
-          <button className="btn-start-all" onClick={() => startWorkout(0)}>
+          <button className="btn-start-all" onClick={() => {
+            startWorkoutAudio()
+            startWorkout(0)
+          }}>
             Start Full Workout
           </button>
 
@@ -396,9 +347,6 @@ const WorkoutTimerContent = () => {
                   onClick={isPaused ? resumeWorkout : pauseWorkout}
                 >
                   {isPaused ? 'Resume' : 'Pause'}
-                </button>
-                <button className="btn-skip" onClick={skipToNext}>
-                  Skip →
                 </button>
                 <button className="btn-stop" onClick={handleStopWorkout}>
                   Stop

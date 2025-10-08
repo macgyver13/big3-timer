@@ -41,8 +41,16 @@ const Settings = ({ isOpen, onClose }) => {
 
   const updatePyramidSet = (index, value) => {
     const newPyramid = [...localConfig.pyramid]
-    newPyramid[index] = parseInt(value) || 0
+    newPyramid[index] = value === '' ? '' : parseInt(value)
     updateLocalConfig({ pyramid: newPyramid })
+  }
+
+  const validatePyramidSet = (index) => {
+    const newPyramid = [...localConfig.pyramid]
+    if (newPyramid[index] === '' || newPyramid[index] < 1) {
+      newPyramid[index] = 1
+      updateLocalConfig({ pyramid: newPyramid })
+    }
   }
 
   const applyPreset = (preset) => {
@@ -95,7 +103,15 @@ const Settings = ({ isOpen, onClose }) => {
                 min="1"
                 max="60"
                 value={localConfig.holdDuration}
-                onChange={(e) => updateLocalConfig({ holdDuration: parseInt(e.target.value) || 10 })}
+                onChange={(e) => {
+                  const val = e.target.value === '' ? '' : parseInt(e.target.value)
+                  updateLocalConfig({ holdDuration: val })
+                }}
+                onBlur={(e) => {
+                  if (e.target.value === '' || parseInt(e.target.value) < 1) {
+                    updateLocalConfig({ holdDuration: 10 })
+                  }
+                }}
               />
             </div>
             <div className="setting-item">
@@ -105,7 +121,15 @@ const Settings = ({ isOpen, onClose }) => {
                 min="0"
                 max="30"
                 value={localConfig.pauseDuration}
-                onChange={(e) => updateLocalConfig({ pauseDuration: parseInt(e.target.value) || 3 })}
+                onChange={(e) => {
+                  const val = e.target.value === '' ? '' : parseInt(e.target.value)
+                  updateLocalConfig({ pauseDuration: val })
+                }}
+                onBlur={(e) => {
+                  if (e.target.value === '' || parseInt(e.target.value) < 0) {
+                    updateLocalConfig({ pauseDuration: 3 })
+                  }
+                }}
               />
             </div>
             <div className="setting-item">
@@ -115,7 +139,15 @@ const Settings = ({ isOpen, onClose }) => {
                 min="0"
                 max="10"
                 value={localConfig.countdownDuration}
-                onChange={(e) => updateLocalConfig({ countdownDuration: parseInt(e.target.value) || 3 })}
+                onChange={(e) => {
+                  const val = e.target.value === '' ? '' : parseInt(e.target.value)
+                  updateLocalConfig({ countdownDuration: val })
+                }}
+                onBlur={(e) => {
+                  if (e.target.value === '' || parseInt(e.target.value) < 0) {
+                    updateLocalConfig({ countdownDuration: 3 })
+                  }
+                }}
               />
             </div>
           </section>
@@ -133,6 +165,7 @@ const Settings = ({ isOpen, onClose }) => {
                     max="30"
                     value={reps}
                     onChange={(e) => updatePyramidSet(idx, e.target.value)}
+                    onBlur={() => validatePyramidSet(idx)}
                   />
                 </div>
               ))}
@@ -180,8 +213,9 @@ const Settings = ({ isOpen, onClose }) => {
                 value={localConfig.audioPreference}
                 onChange={(e) => updateLocalConfig({ audioPreference: e.target.value })}
               >
-                <option value="beep">Beep</option>
-                <option value="chime">Chime</option>
+                <option value="beep">Beep (Short tones)</option>
+                <option value="chime">Chime (Musical tones)</option>
+                <option value="announce">Announce (Experimental)</option>
               </select>
             </div>
             <div className="setting-item">

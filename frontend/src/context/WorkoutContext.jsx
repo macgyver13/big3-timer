@@ -21,7 +21,7 @@ const DEFAULT_CONFIG = {
   holdDuration: 10, // seconds
   pauseDuration: 3, // seconds between holds
   countdownDuration: 3, // seconds before starting hold
-  audioPreference: 'beep', // beep, chime, tone
+  audioPreference: 'beep', // beep, chime, announce
   volume: 0.7,
   theme: 'dark'
 }
@@ -31,7 +31,11 @@ const loadSettings = () => {
   try {
     const saved = localStorage.getItem('big3-timer-settings')
     if (saved) {
-      return { ...DEFAULT_CONFIG, ...JSON.parse(saved) }
+      const parsed = JSON.parse(saved)
+      // Merge with defaults to ensure new settings are included
+      const merged = { ...DEFAULT_CONFIG, ...parsed }
+      console.log('Loaded settings from localStorage:', merged)
+      return merged
     }
   } catch (error) {
     console.error('Failed to load settings:', error)
